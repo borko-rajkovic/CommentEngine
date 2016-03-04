@@ -1,0 +1,389 @@
+﻿@using Humanizer
+@model CommentEngine.Data.Domain.Komentar
+
+@{
+    string pomjeriUdesno = "0";    
+    if (Model.id_parent != null)
+    {
+        //setujemo "indent" za svaki "nivo"
+        int nivo = Model.nivo.Split('.').Length-2;
+        pomjeriUdesno = (20*nivo).ToString()+"px";
+    }
+}
+
+<div id="div-komentar" style="padding-left:@pomjeriUdesno">
+    <p id="id_komentara" hidden>@Model.id</p>
+    <p id="like" hidden>0</p>
+    <p id="dislike" hidden>0</p>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">
+                <table style="width:100%">
+                    <tr>
+                        <td width="50%">
+                            <strong id="txtOdgovara">@Model.ime</strong>
+                            <br />
+                            <small>@Model.datum.ToString("dd.MM.yyyy. HH:mm")h</small>
+                            <br />
+                            <small>
+                                @if (Model.username == null)
+                                {
+                                    @: Neregistrovan korisnik
+                                }
+                                else
+                                {
+                                    @: @Model.username
+                                }
+                            </small>
+                        </td>
+                        <td align="right" width="50%" valign="top" style="padding:10px">
+                            <a href="prijavi">
+                                <span class="btn btn-default">
+                                    Prijavi
+                                    <span class="glyphicon glyphicon-exclamation-sign" title="Prijavi"></span>
+                                </span>
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="panel-body">
+            <p class="lead">
+                @if (Model.id_parent != null)
+                { 
+                    @: <span class="alert-danger">@@@Model.odgovara:</span>
+                    //@: <mark>@@@Model.odgovara:</mark>
+                }
+                @Model.tekst
+            </p>
+            <hr />
+            <table>
+                <tr style="width:100%">
+                    <td>
+                        <span>Preporuka</span>
+                    </td>
+                    <td style="padding-left:10px">
+                        <a href="like">
+                            <span class="glyphicon glyphicon-thumbs-up btn btn-success"></span>
+                        </a>
+                    </td>
+                    <td style="padding-left:5px">
+                        <strong>@Model.likes.ToString()</strong>
+                    </td>
+                    <td style="padding-left:10px">
+                        <a href="dislike">
+                            <span class="glyphicon glyphicon-thumbs-down btn btn-danger"></span>
+                        </a>
+                    </td>
+                    <td style="padding-left:5px">
+                        <strong>@Model.dislikes.ToString()</strong>
+                    </td>
+                    <td align="right" width="70%">
+                        <a href="odgovori">
+                            <span class="btn btn-default">
+                                <span id="btnOdgovori">Odgovori</span>
+                                <span id="imgOdgovori" style="padding-left:5px" class="glyphicon glyphicon glyphicon-pencil"></span>
+                            </span>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            <div id="divPanelOdgovori" style="display:none">
+                <hr />
+                <div class="panel panel-default">
+                    <div class=" panel-heading">
+                        <div class="panel-title">
+                            <form>
+                                <div class="form-group">
+                                    <label for="Ime">Ime</label>
+                                    <input class="form-control" id="txtIme" placeholder="Ime" />
+                                </div>
+                                <div class="form-group" id="divTekst">
+                                    <label for="Tekst">Tekst</label>
+                                    <textarea style="resize:vertical" class="form-control" rows="3" id="txtTekst" placeholder="Tekst"></textarea>
+                                </div>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td align="right">
+                                            <a href="posaljiOdgovor">
+                                                <span class="btn btn-default">
+                                                    Pošalji
+                                                    <span style="padding-left:5px" class="glyphicon glyphicon-share-alt"></span>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script type="text/javascript">
+
+        //TODO Izdvojiti funkcije u externi .js
+
+        var id_komentara;
+
+        //ukoliko je vec prijavljen komentar ne moze se opet prijaviti
+        function fPrijaviKomentar() {
+
+            $.get("@Url.Action("PrijaviKomentar")" ,
+            {
+                id: id_komentara
+            }, function (data) {
+                if (data == "true") {
+                    toastr.options = {
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": false,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    };
+                    toastr.success("Prijavili ste komentar", "Prijava uspješna");
+                }
+                else {
+                    {
+                        toastr.options = {
+                            "debug": false,
+                            "newestOnTop": false,
+                            "progressBar": false,
+                            "positionClass": "toast-top-right",
+                            "preventDuplicates": false,
+                            "showDuration": "300",
+                            "hideDuration": "1000",
+                            "timeOut": "5000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        };
+                        toastr.warning("Komentar je već prijavljen", "Prijava neuspješna");
+                    }
+                }
+            });}
+
+        function fLikeKomentar(like) {
+            $.get("@Url.Action("LajkKomentar")" ,
+        {
+            id: id_komentara
+        }, function (data) {
+                toastr.options = {
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr.success("Like-ovali ste komentar");
+                //setujemo da je vec odradjena akcija
+                $(like).closest("div").parents().eq(1).find("p").first().next().text(1);
+                //upisujemo broj
+                $(like).closest("td").next().find("strong").text(data);
+        });}
+
+        function fDislikeKomentar(like) {
+            $.get("@Url.Action("DislikeKomentar")" ,
+        {
+            id: id_komentara
+        }, function (data) {
+                toastr.options = {
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr.success("Dislike-ovali ste komentar");
+                //setujemo da je vec odradjena akcija
+                $(like).closest("div").parents().eq(1).find("p").first().next().next().text(1);
+                //upisujemo broj
+                $(like).closest("td").next().find("strong").text(data);
+        });
+        }
+
+        function PrijaviKomentar(value)
+        {
+            //ukoliko nije logovan sa Google account-om ne moze da prijavi
+            if (!"@Session["user"]")
+            {
+                toastr.options = {
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr.error("Morate biti logovani da biste prijavili komentar");
+            }
+            else{
+                id_komentara = $(value).closest("div").parents().eq(2).find("p").first().text();
+                //alert(id_komentara);
+                fPrijaviKomentar();
+            }
+        }
+
+        function LikeKomentar(value) {
+            id_komentara = $(value).closest("div").parents().eq(1).find("p").first().text();
+            //alert(id_komentara);
+            if ($(value).closest("div").parents().eq(1).find("p").first().next().text() == 0) {
+                fLikeKomentar(value);
+            }
+            else {
+                toastr.options = {
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr.error("Već ste like-ovali ovaj komentar");
+            }
+        }
+
+        function DislikeKomentar(value) {
+            id_komentara = $(value).closest("div").parents().eq(1).find("p").first().text();
+            //alert(id_komentara);
+            if ($(value).closest("div").parents().eq(1).find("p").first().next().next().text() == 0) {
+                fDislikeKomentar(value);
+            }
+            else {
+                toastr.options = {
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr.error("Već ste dislike-ovali ovaj komentar");
+            }
+        }
+
+        function Odgovori (value)
+        {
+            $(value).closest("div#div-komentar").find("div#divPanelOdgovori").toggle("fold", { size: 125, horizFirst: false }, 700);
+            if ($(value).closest("div#div-komentar").find("#btnOdgovori").text() == "Odgovori") {
+                $(value).closest("div#div-komentar").find("#btnOdgovori").text("Odustani");
+                $(value).closest("div#div-komentar").find("#imgOdgovori").removeClass("glyphicon-pencil");
+                $(value).closest("div#div-komentar").find("#imgOdgovori").addClass("glyphicon-remove");
+            }
+            else {
+                $(value).closest("div#div-komentar").find("#btnOdgovori").text("Odgovori");
+                $(value).closest("div#div-komentar").find("#imgOdgovori").removeClass("glyphicon-remove");
+                $(value).closest("div#div-komentar").find("#imgOdgovori").addClass("glyphicon-pencil");
+            }
+        }
+
+        function fposaljiOdgovor(value)
+        {
+            var imeOdgovor = $(value).closest("div#divPanelOdgovori").find("#txtIme");
+            var tekstOdgovor = $(value).closest("div#divPanelOdgovori").find("#txtTekst");
+            var id_komentara = $(value).closest("div#div-komentar").find("#id_komentara").text();
+            var id_vijesti = "@ViewBag.id_vijesti";
+            var odgovara = $(value).closest("div#div-komentar").find("#txtOdgovara").text();
+
+            if (imeOdgovor.val() == "" || tekstOdgovor.val() == "") {
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr.error("Morate unijeti ime i tekst komentara", "Komentar nije poslat");
+            }
+            else {
+                $.get("@Url.Action("UnesiKomentar")" ,
+                {
+                    id_vijesti: id_vijesti,
+                    ime: imeOdgovor.val(),
+                    tekst: tekstOdgovor.val(),
+                    id_parent: id_komentara,
+                    odgovara: odgovara
+                }, function (data) {});
+                imeOdgovor.val("");
+                tekstOdgovor.val("");
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr.success("Nakon odobrenja komentar će biti prikazan na sajtu", "Komentar je poslat");
+            }
+        }
+
+    </script>

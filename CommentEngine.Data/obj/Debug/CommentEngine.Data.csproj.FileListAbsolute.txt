@@ -1,0 +1,14 @@
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\hibernate.cfg.xml
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\Mapping\Vijest.hbm.xml
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\Mapping\Komentar.hbm.xml
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\CommentEngine.Data.dll
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\CommentEngine.Data.pdb
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\Iesi.Collections.dll
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\NHibernate.dll
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\System.Data.SqlServerCe.dll
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\Iesi.Collections.xml
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\NHibernate.pdb
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\NHibernate.xml
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\obj\Debug\CommentEngine.Data.dll
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\obj\Debug\CommentEngine.Data.pdb
+C:\Users\Borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\obj\Debug\CommentEngine.Data.csprojResolveAssemblyReference.cache

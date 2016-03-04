@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="CommentEngine.Data"
+                   namespace="CommentEngine.Data.Domain">
+
+  <class name="Komentar">
+    <id name="id"  type="int">
+      <generator class="native" />
+    </id>
+    <property name="id_vijesti" />
+    <property name="username" />
+    <property name="ime" />
+    <property name="tekst" />
+    <property name="datum" />
+    <property name="odobren" />
+    <property name="zloupotreba" />
+    <property name="id_parent" />
+    <property name="odgovara" />
+    <property name="likes" />
+    <property name="dislikes" />
+    <property name="nivo" />
+  </class>
+
+</hibernate-mapping>

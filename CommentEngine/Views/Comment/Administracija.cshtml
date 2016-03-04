@@ -1,0 +1,386 @@
+﻿@model IEnumerable<CommentEngine.Models.AdminKomentar>
+
+@{
+    ViewBag.Title = "Administracija";
+    ViewBag.VijestNaslov = "";
+}
+
+<div class="col-md-12" style="padding-bottom:50px">
+
+    <h2>Administracija</h2>
+
+    <hr />
+
+    @if(ViewBag.KoristiKendo==0)
+    {
+    <table class="table table-striped table-bordered table-hover" id="grid">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Vijest)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Username)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Ime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Komentar)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Datum)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Likes)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Dislikes)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Odobren)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Zloupotreba)
+                </th>
+            </tr>
+        </thead>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Vijest)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Username)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Komentar)
+                </td>
+                <td>
+                    @item.Datum.ToString("dd.MM.yyyy.")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Likes)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dislikes)
+                </td>
+                <td>
+                    <div id="divOdobri">
+                        <div class="make-switch has-switch" data-on="success" data-on-label="Da" data-off="danger">
+                            @{
+                            string cekiran = "";
+                            string id_komentara = item.Id.ToString();
+                            ViewBag.id_komentara = id_komentara;
+                            if (item.Odobren == 1)
+                            {
+                                cekiran = "checked=checked";
+                            }
+                            }
+                            <p hidden>@id_komentara</p>
+                            <input id=@id_komentara class="BSswitch" type="checkbox" data-on="success" data-off="danger" data-off-text="Ne" data-on-text="Da" @cekiran>
+                        </div>
+
+                        <script type="text/javascript">
+                            function podesiSwitchOdobri() {
+
+                                var id_komentara = "@ViewBag.id_komentara";
+
+                                $('#'+id_komentara).bootstrapSwitch();
+                                $('#'+id_komentara).on('switchChange.bootstrapSwitch', function (event, state) {
+                                    var neodobren = "";
+                                    if (state == false) {
+                                        neodobren = "ne";
+                                    }
+                                    else {
+                                        neodobren = "";
+                                    }
+                                    @*$.get("@Url.Action("PromijeniOdobrenjeKomentara")",
+                                    {
+                                        id_komentara: id_komentara,
+                                        odobri: state
+                                    }, function (data) {
+                                        posaljiUHub(data);
+                                    });*@
+
+                                    //setuje odobrenje u bazi
+                                    $.ajax({
+                                        data: {
+                                            id_komentara: id_komentara,
+                                            odobri: state
+                                        },
+                                        type: 'post',
+                                        dataType: "json",                
+                                        url: "@Url.Action("PromijeniOdobrenjeKomentara", "Comment")",
+                                        success: function (result) {
+                                            posaljiUHub(result);
+                                        },
+                                        error: function (req, status, error) {
+                                            alert(error);
+                                        }
+                                    });
+                                    toastr.options = {
+                                        "closeButton": false,
+                                        "debug": false,
+                                        "newestOnTop": false,
+                                        "progressBar": false,
+                                        //"positionClass": "toast-top-full-width",
+                                        "positionClass": "toast-top-right",
+                                        "preventDuplicates": false,
+                                        "showDuration": "300",
+                                        "hideDuration": "1000",
+                                        "timeOut": "5000",
+                                        "extendedTimeOut": "1000",
+                                        "showEasing": "swing",
+                                        "hideEasing": "linear",
+                                        "showMethod": "fadeIn",
+                                        "hideMethod": "fadeOut"
+                                    };
+                                    toastr.success("Komentar " + id_komentara + " je " + neodobren + "odobren", "Izmjena uspješna");
+                                });
+                            }
+
+                            podesiSwitchOdobri();
+                        </script>
+
+                    </div>
+                </td>
+                <td>
+                    <div class="make-switch">
+                        @{
+                        string cekiranZloupotreba = "";
+                        if (item.Zloupotreba == 1)
+                        {
+                            cekiranZloupotreba = "checked=checked";
+                        }
+                        id_komentara += "z";
+                        ViewBag.id_komentara = id_komentara;
+                        }
+                        <input id=@id_komentara class="BSswitch zloupotreba" type="checkbox" disabled="disabled" data-on="success" data-off="danger" data-off-text="Ne" data-on-text="Da" @cekiranZloupotreba>
+                    
+                        <script type="text/javascript">
+                            var id_komentara = "@ViewBag.id_komentara";
+                            $('#'+id_komentara).bootstrapSwitch();
+                        </script>
+
+                    </div>   
+                </td>
+            </tr>
+        }
+
+    </table>
+    }
+    else
+    {
+        <table class="table table-striped table-bordered table-hover" id="grid"></table>
+    }
+</div>
+
+
+<link href="~/Content/kendo/2014.2.716/kendo.common.min.css" rel="stylesheet" />
+<link href="~/Content/kendo/2014.2.716/kendo.dataviz.default.min.css" rel="stylesheet" />
+<link href="~/Content/kendo/2014.2.716/kendo.dataviz.min.css" rel="stylesheet" />
+<link href="~/Content/kendo/2014.2.716/kendo.default.min.css" rel="stylesheet" />
+
+<script src="~/Scripts/kendo.all.min.js"></script>
+<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+<script src="~/signalr/hubs"></script>
+
+<script type="text/javascript">
+
+    //TODO Izdvojiti funkcije u externi .js
+
+    var vijest = '@ViewBag.id_vijesti';
+    var komentara = '@ViewBag.broj_komentara';
+    var newComments;
+
+    //Ovdje se koristi signalR u cilju slanja broadcasta za komentare koje administator odobri
+    $(function () {
+        newComments = $.connection.newCommentsHub;
+
+        newComments.client.broadcastMessage = function (id_vijesti, broj_komentara) {
+        };
+
+        $.connection.hub.start().done(function () {
+            
+        });
+    });
+
+    //podesava se switch na osnovu klase BSswitch
+    function podesiSwitch() {
+        $('.BSswitch').bootstrapSwitch();
+
+        //definise se klik na switch
+        $('.BSswitch').on('switchChange.bootstrapSwitch', function (event, state) {
+            var neodobren = "";
+            var id_komentara = $(this).closest("div#divOdobri").find("p").first().html();
+            if (state == false) {
+                neodobren = "ne";
+            }
+            else {
+                neodobren = "";
+            }
+            @*$.get("@Url.Action("PromijeniOdobrenjeKomentara")",
+            {
+                id_komentara: id_komentara,
+                odobri: state
+            }, function (data) {
+                posaljiUHub(data);
+            });*@
+            $.ajax({
+                data: {
+                    id_komentara: id_komentara,
+                    odobri: state
+                },
+                type: 'post',
+                dataType: "json",                
+                url: "@Url.Action("PromijeniOdobrenjeKomentara", "Comment")",
+                success: function (result) {
+                    posaljiUHub(result);
+                },
+                error: function (req, status, error) {
+                    alert(error);
+                }
+                });
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                //"positionClass": "toast-top-full-width",
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            toastr.success("Komentar " + id_komentara + " je " + neodobren + "odobren", "Izmjena uspješna");
+
+            //za Kendo
+            refreshGrid();
+        });
+    }
+
+    function refreshGrid() {
+
+        setTimeout(function () {
+            $.ajax({
+                type: 'post',
+                dataType: "json",                
+                url: "@Url.Action("adminKomentariDS", "Comment")",
+                success: function (result) {
+                    komentariDS = result;
+
+                    var grid = $("#grid").data("kendoGrid");
+                    grid.dataSource.data(komentariDS);
+                    grid.refresh();
+
+                },
+                error: function (req, status, error) {
+                    alert(error);
+                }
+            });
+        }, 1000);
+    }
+
+    var init = function (komentariDS) {
+
+        //postavljanje grida sa data setom komentariDS
+        $("#grid").kendoGrid({
+            height: 550,
+            dataSource: {
+                data: komentariDS,
+                schema: {
+                    model: {
+                        fields: {
+                            Vijest: { type: "string" },
+                            ID: { type: "number" },
+                            Username: { type: "string" },
+                            Ime: { type: "string" },
+                            Komentar: { type: "string" },
+                            Datum: { type: "dateTime" },
+                            Likes: { type: "number" },
+                            Dislikes: { type: "number" },
+                            Odobren: { type: "number" },
+                            Zloupotreba: { type: "checkbox" }
+                        }
+                    }
+                },
+                pageSize: 5
+            },
+            columns: [
+                { field: "Id", title: "Id" },
+                { field: "Vijest", title: "Vijest" },
+                { field: "Username", title: "Username" },
+                { field: "Ime", title: "Ime" },
+                { field: "Komentar", title: "Komentar" },
+                { field: "Datum", title: "Datum", template: "#= kendo.toString(kendo.parseDate(Datum, 'yyyy-MM-dd'), 'dd.MM.yyyy hh:mm') #" },
+                { field: "Likes", title: "Likes" },
+                { field: "Dislikes", title: "Dislikes" },
+                { field: "Odobren", title: "Odobren", template: '<div id="divOdobri"><p hidden>#= Id #</p><input type="checkbox" #= Odobren==1 ? checked="checked" : "" # class="BSswitch" data-off-text="Ne" data-on-text="Da" ></input></div>' },
+                { field: "Zloupotreba", title: "Zloupotreba", template: '<input type="checkbox" #= Zloupotreba==1 ? checked="checked" : "" # disabled="disabled" class="BSswitch" data-off-text="Ne" data-on-text="Da"  ></input>' }
+            ],
+            sortable: true,
+            pageable: {
+                refresh: false,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            dataBound: function () {
+                podesiSwitch();
+            }
+        });
+    }
+
+    function uzmiPodatke()
+    {
+        $.ajax({
+            type: 'post',
+            dataType: "json",
+            url: "@Url.Action("adminKomentariDS", "Comment")",
+            success: function (result) {
+                var komentariDS = result;
+
+                var dataSource = new kendo.data.DataSource({
+                    data: komentariDS,
+                    change: function () { }
+                });
+
+                dataSource.read();
+
+                init(komentariDS);
+            },
+            error: function (req, status, error) {
+                alert(error);
+            }
+        });
+    }
+
+    function posaljiUHub(data)
+    {
+        newComments.server.send(data[0], data[1]);
+    }
+
+    //samo ukoliko se koristi Kendo grid
+    $(document).ready(function () {
+        if ("@ViewBag.KoristiKendo" == 1) {
+            uzmiPodatke();
+        }
+    });
+
+</script>

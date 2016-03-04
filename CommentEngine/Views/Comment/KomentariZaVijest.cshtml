@@ -1,0 +1,238 @@
+﻿@model IEnumerable<CommentEngine.Data.Domain.Komentar>
+
+@{
+    ViewBag.Title = "Komentari";
+}
+
+<div class="col-md-5" style="padding-bottom:50px">
+
+    <h2>Komentari</h2>
+
+    <hr />
+
+    <div class="panel panel-default">
+        <div class=" panel-heading">
+            <div class="panel-title">
+                <form>
+                    <div>
+                        <p class="lead">Ostavite komentar</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Ime">Ime</label>
+                        <input class="form-control" id="txtIme" placeholder="Ime" />
+                    </div>
+                    <div class="form-group" id="divTekst">
+                        <label for="Tekst">Tekst</label>
+                        <textarea style="resize:vertical" class="form-control" rows="3" id="txtTekst" placeholder="Tekst"></textarea>
+                    </div>
+                    <table style="width:100%">
+                        <tr>
+                            <td align="right">
+                                <a href="posalji">
+                                    <span class="btn btn-default">
+                                        Pošalji
+                                        <span style="padding-left:5px" class="glyphicon glyphicon-share-alt"></span>
+                                    </span>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class=" panel-heading">
+            <div class="panel-title">
+                Ukupno <strong>@Model.Count()</strong> komentar(a)
+            </div>
+        </div>
+    </div>
+
+    @foreach (var item in Model)
+    {
+        @Html.Partial("KomentarById", item)
+    }
+
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script type="text/javascript">
+
+    //TODO Izdvojiti funkcije u externi .js
+
+    var vijest = '@ViewBag.id_vijesti';
+    var komentara = '@ViewBag.broj_komentara';
+    var interval;
+    var info=0;
+
+    //ukoliko se poveca broj komentara izaci ce obavjestenje (signalR)
+    $(function () {
+        var newComments = $.connection.newCommentsHub;
+
+        newComments.client.broadcastMessage = function (id_vijesti, broj_komentara) {
+            if (vijest == id_vijesti && broj_komentara>komentara && info==0) {
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    //"positionClass": "toast-top-full-width",
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "0",
+                    "extendedTimeOut": "0",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut",
+                    onclick: function() {window.open("@Url.Action("KomentariZaVijest")", "_self");}
+                };
+                toastr.info("Klikni da osvježiš", "Novi komentari");
+                info = 1;
+            }
+        };
+
+        $.connection.hub.start().done(function () {
+        });
+    });
+
+    ////////////////////////////////////////////
+    ////    nacin bez koriscenja signalR    ////
+    ////////////////////////////////////////////
+
+    @*function gledajPromjene() {
+        $.get("@Url.Action("ImaLiPromjena")" ,
+                {
+                    id_vijesti: vijest,
+                    broj_komentara: komentara
+                }, function (data) {
+                            if (data == "true")
+                            {toastr.options = {
+                                                "closeButton": true,
+                                                "debug": false,
+                                                "newestOnTop": false,
+                                                "progressBar": false,
+                                                //"positionClass": "toast-top-full-width",
+                                                "positionClass": "toast-top-right",
+                                                "preventDuplicates": false,
+                                                "showDuration": "300",
+                                                "hideDuration": "1000",
+                                                "timeOut": "0",
+                                                "extendedTimeOut": "0",
+                                                "showEasing": "swing",
+                                                "hideEasing": "linear",
+                                                "showMethod": "fadeIn",
+                                                "hideMethod": "fadeOut",
+                                                onclick: function() {window.open("@Url.Action("KomentariZaVijest")", "_self");}
+                                                };
+                                toastr.info("Klikni da osvježiš","Novi komentari");
+                                clearInterval(interval);}
+                            });}*@
+
+    //slanje komentara Ajax-om
+    function PosaljiKomentar()
+    {
+        $.get("@Url.Action("UnesiKomentar")" ,
+            {
+                id_vijesti: vijest,
+                ime: $("#txtIme").val(),
+                tekst: $("textArea#txtTekst").val()
+            }, function (data) {});
+    }
+
+    $(document).ready(function () {
+        //interval = setInterval(gledajPromjene, 2000);
+        $("a[href*=like]").click(function (event) {
+            event.preventDefault();
+        });
+
+        $("[href='prijavi']").click(function (event)
+        {
+            event.preventDefault();
+            PrijaviKomentar(this);
+        }
+        );
+
+        //slanje komentara sa validacijom
+        $("[href='posalji']").click(function (event) {
+            event.preventDefault();
+            if($("#txtIme").val()=="" || $("textArea#txtTekst").val()=="")
+            {
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    //"positionClass": "toast-top-full-width",
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr.error("Morate unijeti ime i tekst komentara", "Komentar nije poslat");
+            }
+            else
+            {
+                PosaljiKomentar();
+                $("#txtIme").val("");
+                $("textArea#txtTekst").val("");
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": false,
+                    //"positionClass": "toast-top-full-width",
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                toastr.success("Nakon odobrenja komentar će biti prikazan na sajtu", "Komentar je poslat");
+            }
+        }
+        );
+
+        $("[href='like']").click(function (event) {
+            LikeKomentar(this);
+        }
+        );
+
+        $("[href='dislike']").click(function (event) {
+            DislikeKomentar(this);
+        }
+        );
+
+        $("[href='odgovori']").click(function (event) {
+            event.preventDefault();
+            Odgovori(this);
+        }
+        );
+
+        $("[href='posaljiOdgovor']").click(function (event) {
+            event.preventDefault();
+            fposaljiOdgovor(this);
+        }
+        );
+    });
+    </script>
+}

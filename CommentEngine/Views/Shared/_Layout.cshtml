@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>
+        @ViewBag.Title
+    </title>
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.11.4.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap.min.js"></script>    
+    <link href="~/Content/toastr.min.css" rel="stylesheet" />
+    <script src="~/Scripts/toastr.min.js"></script>
+    <link href="~/Content/bootstrap-switch/bootstrap3/bootstrap-switch.min.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap-switch.min.js"></script>
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <div id="commentEngineMainContainer" class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <ol class="breadcrumb">
+                    <li>
+                        @{
+                            if (Session["user"] ==null || Session["user"].ToString() == "")
+                            {   
+                                @: <a href="@Url.Action("GoogleLogIn")">
+                                @:      <span class="glyphicon glyphicon-eye-close"></span><span style="padding-left:5px">Google log-in</span>
+                                @: </a>
+                            }
+                            else
+                            {
+                                @: <a href="@Url.Action("Vijesti")">
+                                @:      <span class="glyphicon glyphicon-eye-open"></span><span style="padding-left:5px">@Session["user"].ToString()</span>
+                                @: </a>
+                            }
+                        }
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Vijesti")">
+                            <span class="glyphicon glyphicon-home"></span><span style="padding-left:5px">Vijesti</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Administracija", "Comment")">
+                            <span class="glyphicon glyphicon-user"></span><span style="padding-left:5px">Administracija</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("Administracija2", "Comment")">
+                            <span class="glyphicon glyphicon-user"></span><span style="padding-left:5px">Administracija (Kendo)</span>
+                        </a>
+                    </li>
+                    @if (ViewBag.VijestNaslov != null && ViewBag.VijestNaslov != "")
+                    {
+                        <li>
+                            <a href="@Url.Action("KomentariZaVijest", "Comment", new { id=ViewBag.id_vijesti})">
+                                @ViewBag.VijestNaslov - Komentari
+                            </a>
+                        </li>
+                    }
+                </ol>
+            </div>
+        </div>
+
+        <div class="row">
+            @RenderBody()
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar navbar-default navbar-fixed-bottom">
+                    <p class="text-center">
+                        Copyright &copy; Company @DateTime.Today.Year
+                    </p>
+                </nav>
+            </div>
+        </div>
+    </div>
+    @RenderSection("scripts", required: false)    
+</body>
+</html>

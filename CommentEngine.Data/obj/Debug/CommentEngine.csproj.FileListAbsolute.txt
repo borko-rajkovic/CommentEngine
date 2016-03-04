@@ -1,0 +1,9 @@
+c:\users\borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\hibernate.cfg.xml
+c:\users\borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\CommentEngine.Data.dll
+c:\users\borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\CommentEngine.Data.pdb
+c:\users\borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\Iesi.Collections.dll
+c:\users\borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\NHibernate.dll
+c:\users\borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\Iesi.Collections.xml
+c:\users\borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\bin\Debug\NHibernate.xml
+c:\users\borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\obj\Debug\CommentEngine.Data.dll
+c:\users\borko\documents\visual studio 2013\Projects\CommentEngine\CommentEngine.Data\obj\Debug\CommentEngine.Data.pdb
